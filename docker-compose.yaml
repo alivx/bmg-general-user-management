@@ -1,0 +1,38 @@
+version: '2'
+
+services:
+  mongodb-primary:
+    image: 'bitnami/mongodb:latest'
+    container_name: mongo-master
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-primary
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_ROOT_PASSWORD=bmgpasswordMongo
+      - MONGODB_REPLICA_SET_KEY=replSetD
+    volumes:
+      - 'mongodb_master_data:/bitnami'
+  mongodb-secondary:
+    image: 'bitnami/mongodb:latest'
+    container_name: mongo-slave
+    depends_on:
+      - mongodb-primary
+    environment:
+      - MONGODB_REPLICA_SET_MODE=secondary
+      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
+      - MONGODB_INITIAL_PRIMARY_PORT_NUMBER=27017
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=bmgpasswordMongo
+      - MONGODB_REPLICA_SET_KEY=replSetD
+  mongodb-arbiter:
+    image: 'bitnami/mongodb:latest'
+    container_name: mongo-arbiter
+    depends_on:
+      - mongodb-primary
+    environment:
+      - MONGODB_REPLICA_SET_MODE=arbiter
+      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
+      - MONGODB_INITIAL_PRIMARY_PORT_NUMBER=27017
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=bmgpasswordMongo
+      - MONGODB_REPLICA_SET_KEY=replSetD
+volumes:
+  mongodb_master_data:
+    driver: local
