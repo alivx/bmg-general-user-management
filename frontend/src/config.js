@@ -1,3 +1,3 @@
 module.exports = {
-    apiUrl: 'http://localhost:3001/api/users'
+    apiUrl: 'http://bmg-backend:3001/api/users'
 }
