@@ -1,0 +1,75 @@
+version: "3"
+services:
+  mongodb-primary:
+    image: bitnami/mongodb:latest
+    container_name: mongo-master
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-primary
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_ROOT_PASSWORD=bmgpasswordMongo
+      - MONGODB_REPLICA_SET_KEY=replSetD
+    volumes:
+      - "mongodb_master_data:/bitnami"
+    deploy:
+      replicas: 1
+    ports:
+      - 27017:27017
+    networks:
+      - bmgnetwork
+  mongodb-secondary:
+    image: bitnami/mongodb:latest
+    container_name: mongo-slave
+    depends_on:
+      - mongodb-primary
+    environment:
+      - MONGODB_REPLICA_SET_MODE=secondary
+      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
+      - MONGODB_INITIAL_PRIMARY_PORT_NUMBER=27017
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=bmgpasswordMongo
+      - MONGODB_REPLICA_SET_KEY=replSetD
+    deploy:
+      replicas: 1
+    networks:
+      - bmgnetwork
+  mongodb-arbiter:
+    image: bitnami/mongodb:latest
+    container_name: mongo-arbiter
+    depends_on:
+      - mongodb-primary
+    environment:
+      - MONGODB_REPLICA_SET_MODE=arbiter
+      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
+      - MONGODB_INITIAL_PRIMARY_PORT_NUMBER=27017
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=bmgpasswordMongo
+      - MONGODB_REPLICA_SET_KEY=replSetD
+    deploy:
+      replicas: 1
+    networks:
+      - bmgnetwork
+
+  bmg-frontend:
+    image: alivx/bmg:frontend
+    container_name: bmg-frontend
+    ports:
+      - 3000:3000
+    deploy:
+      replicas: 1
+    networks:
+      - bmgnetwork
+  bmg-backend:
+    image: alivx/bmg:backend
+    container_name: bmg-backend
+    environment:
+      - connectionString=mongodb-primary
+    ports:
+      - 3001:3001
+    deploy:
+      replicas: 1
+    networks:
+      - bmgnetwork
+
+volumes:
+  mongodb_master_data:
+    driver: local
+networks:
+  bmgnetwork:

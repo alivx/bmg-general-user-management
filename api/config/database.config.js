@@ -1,3 +1,3 @@
 module.exports = {
-    url: "mongodb://bmg-mongo-master:27017/bmg",
+    url: "mongodb://127.0.0.1:27017/bmg",
 };
