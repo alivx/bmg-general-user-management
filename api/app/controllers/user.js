@@ -1,13 +1,21 @@
 const Usermode = require("../models/user.js");
+const crypto = require("crypto");
+
 exports.create = (req, res) => {
     console.log(`create user requested data is ${JSON.stringify(req.body)}`);
     // Create a Note
+    var password = crypto
+        .createHash("sha1")
+        .update(req.body.password, "binary")
+        .digest("hex");
+    console.log(password);
+
     const user = new Usermode({
         username: req.body.username,
         fullName: req.body.fullName,
         birthday: req.body.birthday,
         email: req.body.email,
-        password: req.body.password,
+        password: password,
         profilePhoto: req.body.profilePhoto,
     });
 
@@ -30,6 +38,7 @@ exports.delete = (req, res) => {
             message: "userId is required",
         });
     }
+
     Usermode.findByIdAndRemove(req.body.userId)
         .then((user) => {
             if (!user) {
@@ -38,7 +47,7 @@ exports.delete = (req, res) => {
                 });
             }
             console.log("delete user successfull");
-            res.status(200).send({ message: "User deleted successfully!" });
+            res.send({ message: "User deleted successfully!" });
         })
         .catch(() => {
             return res.status(500).send({

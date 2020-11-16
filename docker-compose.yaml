@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-  mongodb_container:
+  mongodb:
     image: mongo:latest
     ports:
       - 27017:27017
@@ -8,22 +8,20 @@ services:
     volumes:
       - mongodb_data_container:/data/db
 
-  bmg-frontend:
-    image: alivx/bmg:frontend
-    container_name: bmg-frontend
-    ports:
-      - 3000:3000
-  bmg-backend:
+  backend:
     image: alivx/bmg:backend
-    container_name: bmg-backend
-    environment:
-      - connectionString=mongodb-primary
+    container_name: backend
     ports:
       - 3001:3001
     network_mode: host
 
+  frontend:
+    image: alivx/bmg:frontend
+    container_name: frontend
+    ports:
+      - 3000:3000
+
+
 
 volumes:
   mongodb_data_container:
-networks:
-  bmgnetwork:
