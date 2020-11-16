@@ -1,3 +1,3 @@
 module.exports = {
-    url: "mongodb+srv://mongo-master/bmg",
+    url: "mongodb://localhost:27017/bmg",
 };
