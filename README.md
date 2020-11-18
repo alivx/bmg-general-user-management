@@ -6,8 +6,6 @@ authentication are not required), consider it as part of an administration panel
 system user accounts and the administrator is already logged in.
 
 
-## Service Diagram.
-
 ## Deploymnet guide.
 To start services
 ```Bash
